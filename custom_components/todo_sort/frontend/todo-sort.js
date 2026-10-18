@@ -22,12 +22,14 @@
     en: {
       sort_asc: "Sort A to Z",
       sort_desc: "Sort Z to A",
-      keep_sorted: "Keep sorted A to Z",
+      keep_sorted_asc: "Keep sorted A to Z",
+      keep_sorted_desc: "Keep sorted Z to A",
       remove_duplicates: "Remove duplicates",
       sorted_asc: "Sorted A to Z",
       sorted_desc: "Sorted Z to A",
       sort_failed: "Couldn't sort: {error}",
-      auto_on: "This list now stays sorted A to Z",
+      auto_on_asc: "This list now stays sorted A to Z",
+      auto_on_desc: "This list now stays sorted Z to A",
       auto_off: "Auto-sort off. Drag to reorder.",
       auto_failed: "Couldn't change auto-sort: {error}",
       removed_none: "No duplicates found",
@@ -118,14 +120,16 @@
     }
   };
 
-  const toggleAuto = async (panel) => {
+  // Ticking the mode that's already on turns auto-sort off; ticking the other
+  // one switches to it.
+  const toggleAuto = async (panel, order) => {
     const id = panel._entityId;
-    const mode = autoSort[id] ? "off" : "alpha_asc";
+    const mode = autoSort[id] === order ? "off" : order;
     try {
       await panel.hass.callService("todo_sort", "set_auto_sort", { mode }, { entity_id: id });
       if (mode === "off") delete autoSort[id];
       else autoSort[id] = mode;
-      toast(panel, t(panel, mode === "off" ? "auto_off" : "auto_on"));
+      toast(panel, t(panel, mode === "off" ? "auto_off" : `auto_on_${mode.slice(6)}`));
     } catch (err) {
       toast(panel, t(panel, "auto_failed", { error: errorText(err) }));
     }
@@ -161,7 +165,8 @@
         divider,
         makeItem("todo_sort_asc", "sort_asc", ICON_ASC),
         makeItem("todo_sort_desc", "sort_desc", ICON_DESC),
-        makeItem("todo_sort_auto", "keep_sorted", null, true),
+        makeItem("todo_sort_auto_asc", "keep_sorted_asc", null, true),
+        makeItem("todo_sort_auto_desc", "keep_sorted_desc", null, true),
         makeItem("todo_sort_dedupe", "remove_duplicates", ICON_DEDUPE),
       ];
       // Insert after "Assist" so Lit's conditional "Delete list" part, which
@@ -178,14 +183,17 @@
         const value = ev.detail && ev.detail.item && ev.detail.item.value;
         if (value === "todo_sort_asc") sortNow(panel, "alpha_asc");
         else if (value === "todo_sort_desc") sortNow(panel, "alpha_desc");
-        else if (value === "todo_sort_auto") toggleAuto(panel);
+        else if (value === "todo_sort_auto_asc") toggleAuto(panel, "alpha_asc");
+        else if (value === "todo_sort_auto_desc") toggleAuto(panel, "alpha_desc");
         else if (value === "todo_sort_dedupe") removeDuplicates(panel);
       });
     }
 
     const sortable = canSort(panel);
     const deletable = canDelete(panel);
-    const auto = !!autoSort[panel._entityId];
+    const mode = autoSort[panel._entityId];
+    const auto = !!mode;
+    const checks = { todo_sort_auto_asc: "alpha_asc", todo_sort_auto_desc: "alpha_desc" };
     items.forEach((el) => {
       const label = el.querySelector("[data-label]");
       if (label) {
@@ -195,7 +203,9 @@
       if (el.value === "todo_sort_dedupe") el.hidden = !deletable;
       else if (el.tagName === "WA-DIVIDER") el.hidden = !sortable && !deletable;
       else el.hidden = !sortable;
-      if (el.value === "todo_sort_auto" && el.checked !== auto) el.checked = auto;
+      if (el.value in checks && el.checked !== (mode === checks[el.value])) {
+        el.checked = mode === checks[el.value];
+      }
       if (el.value === "todo_sort_desc") el.disabled = auto;
       if (el.value === "todo_sort_asc") el.disabled = auto;
     });

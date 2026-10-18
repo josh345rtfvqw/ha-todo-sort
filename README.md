@@ -5,7 +5,7 @@ Adds alphabetical sorting to Home Assistant to-do lists, right inside the built-
 Open any list, tap the three-dot menu, and you get:
 
 - **Sort A to Z** and **Sort Z to A**: sorts the list once. You can still drag items around afterwards.
-- **Keep sorted A to Z**: the list re-sorts itself whenever an item is added or renamed, from any device, voice or automation. Turn it off to go back to drag-to-reorder.
+- **Keep sorted A to Z** and **Keep sorted Z to A**: the list re-sorts itself whenever an item is added or renamed, from any device, voice or automation. Tick the other one to switch direction, or untick to go back to drag-to-reorder.
 - **Remove duplicates**: deletes items that repeat another item's name, ignoring case. If one copy is still to do and another is completed, the to-do copy stays. A copy with its own description or due date is never removed.
 
 Sorting ignores case, handles numbers properly ("item 2" before "item 10") and skips a leading quantity, so "2 eggs", "3x milk" and "500g flour" sort under E, M and F. The built-in `shopping_list.sort` puts "Zucchini" before "apples"; this doesn't.

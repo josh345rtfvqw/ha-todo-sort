@@ -1,7 +1,7 @@
 """Constants for To-do Sort."""
 
 DOMAIN = "todo_sort"
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 SERVICE_SORT = "sort"
 SERVICE_SET_AUTO_SORT = "set_auto_sort"
