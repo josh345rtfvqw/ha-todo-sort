@@ -1,0 +1,14 @@
+{
+  "domain": "todo_sort",
+  "name": "To-do Sort",
+  "codeowners": ["@josh345rtfvqw"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "todo", "websocket_api"],
+  "documentation": "https://github.com/josh345rtfvqw/ha-todo-sort",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/josh345rtfvqw/ha-todo-sort/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}

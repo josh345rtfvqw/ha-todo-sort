@@ -1,0 +1,45 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "To-do Sort is already set up.",
+      "single_instance_allowed": "To-do Sort is already set up."
+    }
+  },
+  "selector": {
+    "order": {
+      "options": {
+        "alpha_asc": "A to Z",
+        "alpha_desc": "Z to A"
+      }
+    },
+    "mode": {
+      "options": {
+        "off": "Off",
+        "alpha_asc": "Keep sorted A to Z",
+        "alpha_desc": "Keep sorted Z to A"
+      }
+    }
+  },
+  "services": {
+    "sort": {
+      "name": "Sort to-do list",
+      "description": "Sorts the items in a to-do list by name. Ignores case and sorts numbers naturally.",
+      "fields": {
+        "order": {
+          "name": "Order",
+          "description": "A to Z or Z to A."
+        }
+      }
+    },
+    "set_auto_sort": {
+      "name": "Set auto-sort",
+      "description": "Keeps a to-do list sorted by name whenever items are added or renamed. Set to off to go back to manual order.",
+      "fields": {
+        "mode": {
+          "name": "Mode",
+          "description": "Off, keep sorted A to Z, or keep sorted Z to A."
+        }
+      }
+    }
+  }
+}

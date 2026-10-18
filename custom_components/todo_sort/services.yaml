@@ -1,0 +1,33 @@
+sort:
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.MOVE_TODO_ITEM
+  fields:
+    order:
+      default: alpha_asc
+      selector:
+        select:
+          translation_key: order
+          options:
+            - alpha_asc
+            - alpha_desc
+
+set_auto_sort:
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.MOVE_TODO_ITEM
+  fields:
+    mode:
+      required: true
+      default: alpha_asc
+      selector:
+        select:
+          translation_key: mode
+          options:
+            - "off"
+            - alpha_asc
+            - alpha_desc
