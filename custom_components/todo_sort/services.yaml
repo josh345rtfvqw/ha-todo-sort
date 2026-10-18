@@ -31,3 +31,10 @@ set_auto_sort:
             - "off"
             - alpha_asc
             - alpha_desc
+
+remove_duplicates:
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.DELETE_TODO_ITEM

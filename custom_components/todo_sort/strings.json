@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "To-do Sort",
-        "description": "Adds Sort A to Z, Sort Z to A and Keep sorted A to Z to the menu on the To-do page."
+        "description": "Adds sorting and Remove duplicates to the menu on the To-do page."
       }
     },
     "abort": {
@@ -46,6 +46,33 @@
           "description": "Off, keep sorted A to Z, or keep sorted Z to A."
         }
       }
+    },
+    "remove_duplicates": {
+      "name": "Remove duplicates",
+      "description": "Deletes items that repeat another item's name, ignoring case. A copy that's still to do is kept over a completed one, and copies with their own description or due date are left alone."
+    }
+  },
+  "exceptions": {
+    "not_found": {
+      "message": "To-do list {entity_id} not found."
+    },
+    "cannot_reorder": {
+      "message": "{entity_id} can't be reordered, so it can't be sorted."
+    },
+    "cannot_keep_sorted": {
+      "message": "{entity_id} can't be reordered, so it can't be kept sorted."
+    },
+    "cannot_delete": {
+      "message": "Items can't be deleted from {entity_id}, so duplicates can't be removed."
+    },
+    "no_target": {
+      "message": "Pick at least one to-do list."
+    },
+    "invalid_order": {
+      "message": "Order must be alpha_asc or alpha_desc."
+    },
+    "invalid_mode": {
+      "message": "Mode must be off, alpha_asc or alpha_desc."
     }
   }
 }

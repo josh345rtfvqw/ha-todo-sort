@@ -5,11 +5,18 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from homeassistant.components.todo import TodoItemStatus
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import ORDER_DESC
+from .const import DOMAIN, ORDER_DESC
 
 _NUM_SPLIT = re.compile(r"(\d+)")
+# A leading quantity such as "2 ", "3x ", "1.5 kg " or "1/2 lb ". It only
+# counts when a name follows, so "7up" and "4th of July" are left alone.
+_QUANTITY = re.compile(
+    r"^\d+(?:[.,/]\d+)?\s*(?:x|×|g|kg|mg|ml|cl|l|lb|lbs|oz|pk|pack|packs)?\.?\s+(?=\S)",
+    re.IGNORECASE,
+)
 
 
 def natural_key(text: str | None) -> tuple[Any, ...]:
@@ -18,10 +25,21 @@ def natural_key(text: str | None) -> tuple[Any, ...]:
     return tuple((0, int(p), "") if p.isdigit() else (1, 0, p) for p in parts if p)
 
 
+def strip_quantity(text: str | None) -> str:
+    """Drop a leading quantity, so "2 eggs" sorts as "eggs"."""
+    text = (text or "").strip()
+    return _QUANTITY.sub("", text, count=1)
+
+
+def item_key(text: str | None) -> tuple[Any, ...]:
+    """Sort key for an item name: by name ignoring quantity, then by quantity."""
+    return (natural_key(strip_quantity(text)), natural_key(text))
+
+
 def target_order(items: list[Any], order: str) -> list[str]:
     """Return item uids in the requested order. Stable for equal names."""
     keyed = [
-        (natural_key(item.summary), idx, item.uid)
+        (item_key(item.summary), idx, item.uid)
         for idx, item in enumerate(items)
         if item.uid
     ]
@@ -96,6 +114,49 @@ async def async_sort_entity(entity: Any, order: str) -> int:
             await entity.async_move_todo_item(uid=uid, previous_uid=previous_uid)
         except NotImplementedError as err:
             raise HomeAssistantError(
-                f"{entity.entity_id} does not support reordering items"
+                translation_domain=DOMAIN,
+                translation_key="cannot_reorder",
+                translation_placeholders={"entity_id": entity.entity_id},
             ) from err
     return len(moves)
+
+
+def _dedupe_name(text: str | None) -> str:
+    return " ".join((text or "").split()).casefold()
+
+
+def plan_dedupe(items: list[Any]) -> list[str]:
+    """Return uids of items that repeat an earlier item's name.
+
+    Names match ignoring case and extra spaces, but not quantity ("2 eggs" and
+    "eggs" are different items). The copy that's still to do wins over a
+    completed one, otherwise the first in the list wins. A copy with its own
+    description or due date is kept, so nothing typed into it is lost.
+    """
+    ranked = sorted(
+        enumerate(items),
+        key=lambda p: (p[1].status == TodoItemStatus.COMPLETED, p[0]),
+    )
+    kept: dict[str, Any] = {}
+    remove: list[str] = []
+    for _, item in ranked:
+        name = _dedupe_name(item.summary)
+        if not item.uid or not name:
+            continue
+        keep = kept.get(name)
+        if keep is None:
+            kept[name] = item
+            continue
+        details = (item.description or "", item.due)
+        if details not in (("", None), (keep.description or "", keep.due)):
+            continue
+        remove.append(item.uid)
+    return remove
+
+
+async def async_dedupe_entity(entity: Any) -> int:
+    """Delete repeated items from one to-do entity. Returns how many went."""
+    uids = plan_dedupe(list(entity.todo_items or []))
+    if uids:
+        await entity.async_delete_todo_items(uids)
+    return len(uids)

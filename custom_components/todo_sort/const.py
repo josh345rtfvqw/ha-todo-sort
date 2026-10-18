@@ -1,10 +1,11 @@
 """Constants for To-do Sort."""
 
 DOMAIN = "todo_sort"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 SERVICE_SORT = "sort"
 SERVICE_SET_AUTO_SORT = "set_auto_sort"
+SERVICE_REMOVE_DUPLICATES = "remove_duplicates"
 
 ATTR_ORDER = "order"
 ATTR_MODE = "mode"

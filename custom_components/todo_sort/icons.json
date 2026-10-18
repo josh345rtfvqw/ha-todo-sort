@@ -1,6 +1,13 @@
 {
   "services": {
-    "sort": { "service": "mdi:sort-alphabetical-ascending" },
-    "set_auto_sort": { "service": "mdi:sort-alphabetical-variant" }
+    "sort": {
+      "service": "mdi:sort-alphabetical-ascending"
+    },
+    "set_auto_sort": {
+      "service": "mdi:sort-alphabetical-variant"
+    },
+    "remove_duplicates": {
+      "service": "mdi:playlist-remove"
+    }
   }
 }
