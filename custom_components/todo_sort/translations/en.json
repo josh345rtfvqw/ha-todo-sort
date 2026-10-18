@@ -1,5 +1,11 @@
 {
   "config": {
+    "step": {
+      "user": {
+        "title": "To-do Sort",
+        "description": "Adds Sort A to Z, Sort Z to A and Keep sorted A to Z to the menu on the To-do page."
+      }
+    },
     "abort": {
       "already_configured": "To-do Sort is already set up.",
       "single_instance_allowed": "To-do Sort is already set up."
